@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utility Strike Reporting — Geocon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="form-container">
+    <header class="form-header">
+      <div class="header-accent"></div>
+      <div class="header-content">
+        <img src="geocon_logo.png" alt="Geocon, Inc." class="logo">
+        <h1>Utility Strike Reporting</h1>
+        <p class="form-description">
+          Complete all required fields below. No sign-in is needed.
+        </p>
+      </div>
+    </header>
+
+    <form id="strikeForm" novalidate>
+
+      <!-- 1 -->
+      <div class="field required">
+        <label for="projectNumber">1. Geocon Project #:</label>
+        <input type="text" id="projectNumber" name="projectNumber" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 2 -->
+      <div class="field required">
+        <label for="projectName">2. Geocon Project Name:</label>
+        <input type="text" id="projectName" name="projectName" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 3 -->
+      <div class="field required">
+        <label for="reporterName">3. Reporter's Name:</label>
+        <input type="text" id="reporterName" name="reporterName" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 4 -->
+      <div class="field required">
+        <label for="projectManager">4. Project Manager:</label>
+        <input type="text" id="projectManager" name="projectManager" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 5 -->
+      <div class="field required">
+        <label for="employeesOnSite">5. Geocon Employee(s) On-Site:</label>
+        <input type="text" id="employeesOnSite" name="employeesOnSite" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 6 -->
+      <div class="field required">
+        <label for="strikeDate">6. Date of Utility Strike:</label>
+        <input type="date" id="strikeDate" name="strikeDate" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 7 -->
+      <div class="field required">
+        <label for="strikeTime">7. Time of Utility Strike:</label>
+        <input type="time" id="strikeTime" name="strikeTime" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 8 -->
+      <div class="field required">
+        <label for="clientContact">8. Client Contact Person:</label>
+        <input type="text" id="clientContact" name="clientContact" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 9 -->
+      <div class="field required">
+        <label for="clientPhone">9. Client Contact Person's Phone Number:</label>
+        <input type="tel" id="clientPhone" name="clientPhone" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 10 -->
+      <div class="field required">
+        <label for="digAlertTicket">10. Dig Alert Ticket #:</label>
+        <p class="field-note">
+          Please email a copy of the Dig Alert Ticket Confirmation Email to Sarah Miranda at
+          <a href="mailto:miranda@geoconinc.com">miranda@geoconinc.com</a>.
+        </p>
+        <input type="text" id="digAlertTicket" name="digAlertTicket" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 11 -->
+      <div class="field">
+        <label for="digAlertExplanation">11. If a Dig Alert Ticket Confirmation Email is not available, please explain why.</label>
+        <textarea id="digAlertExplanation" name="digAlertExplanation" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <!-- 12 -->
+      <div class="field required">
+        <label>12. Was a Private Utility Locator Hired?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="privateLocator" value="Yes" required>
+            <span class="radio-custom"></span>
+            Yes
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="privateLocator" value="No">
+            <span class="radio-custom"></span>
+            No
+          </label>
+        </div>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 13 (conditional: shown when Q12 = Yes) -->
+      <div class="field conditional" id="locatorHiredGroup" style="display:none;">
+        <label for="locatorSubcontractor">13. If a Private Utility Locator WAS hired, which Subcontractor was hired?</label>
+        <input type="text" id="locatorSubcontractor" name="locatorSubcontractor" placeholder="Enter your answer">
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 14 (conditional: shown when Q12 = No) -->
+      <div class="field conditional" id="locatorNotHiredGroup" style="display:none;">
+        <label for="locatorWhyNot">14. If a Private Utility Locator WAS NOT hired, why not?</label>
+        <textarea id="locatorWhyNot" name="locatorWhyNot" rows="3" placeholder="Enter your answer"></textarea>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 15 -->
+      <div class="field required">
+        <label for="drillingSubcontractor">15. Name of the Drilling Subcontractor hired:</label>
+        <input type="text" id="drillingSubcontractor" name="drillingSubcontractor" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 16 -->
+      <div class="field required">
+        <label>16. What type of utility was encountered/hit?</label>
+        <p class="field-note">(Select All That Apply)</p>
+        <div class="checkbox-group">
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Communication">
+            <span class="checkbox-custom"></span>
+            Communication
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Electrical">
+            <span class="checkbox-custom"></span>
+            Electrical
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Gas">
+            <span class="checkbox-custom"></span>
+            Gas
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Irrigation">
+            <span class="checkbox-custom"></span>
+            Irrigation
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Sewer">
+            <span class="checkbox-custom"></span>
+            Sewer
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Storm Drain">
+            <span class="checkbox-custom"></span>
+            Storm Drain
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Water">
+            <span class="checkbox-custom"></span>
+            Water
+          </label>
+          <label class="checkbox-option">
+            <input type="checkbox" name="utilityType" value="Other">
+            <span class="checkbox-custom"></span>
+            Other
+          </label>
+        </div>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- 17 -->
+      <div class="field required">
+        <label for="description">17. Please provide a description of what happened:</label>
+        <p class="field-note">
+          Please email photos of the site BEFORE and AFTER the utility strike to Sarah Miranda at
+          <a href="mailto:miranda@geoconinc.com">miranda@geoconinc.com</a>.
+        </p>
+        <textarea id="description" name="description" rows="5" placeholder="Enter your answer" required></textarea>
+        <span class="error-msg"></span>
+      </div>
+
+      <!-- Photo Uploads -->
+      <div class="field">
+        <label>Upload Site Photos (Before &amp; After):</label>
+        <p class="field-note">You may attach photos directly here instead of emailing them.</p>
+        <div class="upload-area" id="uploadArea">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p>Tap to select photos or drag &amp; drop</p>
+          <input type="file" id="photoUpload" name="photos" multiple accept="image/*" capture="environment">
+        </div>
+        <div class="photo-preview" id="photoPreview"></div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
+    </form>
+
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-card">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <h2>Report Submitted</h2>
+        <p>Your Utility Strike Report has been submitted successfully.</p>
+        <button class="submit-btn" onclick="location.reload()">Submit Another Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
