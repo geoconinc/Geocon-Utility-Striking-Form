@@ -1,23 +1,25 @@
-require("dotenv").config();
-
-const express = require("express");
-const multer = require("multer");
-const path = require("path");
+const parser = require("lambda-multipart-parser");
 const nodemailer = require("nodemailer");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 15 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => {
-    if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Only image files are allowed."));
-  },
-});
-
-// ---- Email ----
+const FORM_FIELDS = [
+  "projectNumber",
+  "projectName",
+  "reporterName",
+  "projectManager",
+  "employeesOnSite",
+  "strikeDate",
+  "strikeTime",
+  "clientContact",
+  "clientPhone",
+  "digAlertTicket",
+  "digAlertExplanation",
+  "privateLocator",
+  "locatorSubcontractor",
+  "locatorWhyNot",
+  "drillingSubcontractor",
+  "utilityType",
+  "description",
+];
 
 function createTransporter() {
   return nodemailer.createTransport({
@@ -33,9 +35,12 @@ function createTransporter() {
 
 function buildEmailHtml(data, attachmentCount = 0) {
   const field = (label, value) =>
-    value ? `<tr><td style="padding:6px 12px;font-weight:600;vertical-align:top;white-space:nowrap;">${label}</td><td style="padding:6px 12px;">${value}</td></tr>` : "";
+    value
+      ? `<tr><td style="padding:6px 12px;font-weight:600;vertical-align:top;white-space:nowrap;">${label}</td><td style="padding:6px 12px;">${value}</td></tr>`
+      : "";
 
-  const photoSection = attachmentCount > 0
+  const hasAttachments = attachmentCount > 0;
+  const photoSection = hasAttachments
     ? `<h3 style="margin-top:24px;">Photos</h3>
        <p style="margin-bottom:8px;color:#555;">Photo(s) are attached to this email — you can save or download them from the attachments.</p>`
     : "";
@@ -77,14 +82,14 @@ function getEmailRecipients() {
   return [...new Set(to)].join(", ");
 }
 
-async function sendEmail(data, files = []) {
+async function sendEmail(data, files) {
   const transporter = createTransporter();
   const recipients = getEmailRecipients();
   const subject = `Utility Strike Report – ${data.projectName || "No Project Name"} (${data.strikeDate || "No Date"})`;
 
-  const attachments = files.map((file, i) => ({
-    filename: file.originalname || `photo-${i + 1}.jpg`,
-    content: file.buffer,
+  const attachments = (files || []).map((f, i) => ({
+    filename: f.filename || `photo-${i + 1}.jpg`,
+    content: f.content,
   }));
 
   await transporter.sendMail({
@@ -96,28 +101,32 @@ async function sendEmail(data, files = []) {
   });
 }
 
-// ---- Serve static frontend ----
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, body: JSON.stringify({ success: false, error: "Method not allowed" }) };
+  }
 
-app.use(express.static(path.join(__dirname)));
-
-// ---- API endpoint ----
-
-app.post("/api/submit", upload.array("photos", 20), async (req, res) => {
   try {
-    const data = req.body;
-    const files = req.files || [];
+    const parsed = await parser.parse(event);
+    const data = {};
+    for (const key of FORM_FIELDS) {
+      data[key] = (parsed[key] != null ? String(parsed[key]).trim() : "") || "";
+    }
+    const files = parsed.files || [];
 
     await sendEmail(data, files);
 
-    res.json({ success: true });
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success: true }),
+    };
   } catch (err) {
-    console.error("Submission error:", err);
-    res.status(500).json({ success: false, error: err.message });
+    console.error("Submit error:", err);
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ success: false, error: err.message }),
+    };
   }
-});
-
-// ---- Start ----
-
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+};

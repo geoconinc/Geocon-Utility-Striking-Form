@@ -186,7 +186,9 @@ document.addEventListener("DOMContentLoaded", () => {
     submitBtn.textContent = "Submitting…";
 
     try {
-      const res = await fetch("/api/submit", {
+      const isLocalExpress = window.location.port === "3000" && window.location.hostname === "localhost";
+      const submitUrl = isLocalExpress ? "/api/submit" : "/.netlify/functions/submit";
+      const res = await fetch(submitUrl, {
         method: "POST",
         body: formData,
       });
