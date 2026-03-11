@@ -44,6 +44,10 @@ See **NETLIFY.md** for full deploy and env details.
 
 ---
 
+## QR codes
+
+The QR codes in this directory were created with [QRCode Monkey](https://www.qrcode-monkey.com/) — a free QR code generator that supports custom logos and high-resolution download.
+
 ## Repository
 
 - **Source:** This GitHub repo (Geocon-Utility-Striking-Form)
