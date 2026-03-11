@@ -76,15 +76,17 @@ function buildEmailHtml(data, attachmentCount = 0) {
 }
 
 function getEmailRecipients() {
-  const to = [process.env.EMAIL_TO || "mundra@Geoconinc.com"];
+  const to = [];
+  if (process.env.EMAIL_TO && process.env.EMAIL_TO.trim()) to.push(process.env.EMAIL_TO.trim());
   const legal = process.env.LEGAL_EMAIL || process.env.EMAIL_TO_LEGAL;
   if (legal && legal.trim()) to.push(legal.trim());
   return [...new Set(to)].join(", ");
 }
 
 async function sendEmail(data, files) {
-  const transporter = createTransporter();
   const recipients = getEmailRecipients();
+  if (!recipients) throw new Error("No email recipients. Set EMAIL_TO in Netlify environment variables.");
+  const transporter = createTransporter();
   const subject = `Utility Strike Report – ${data.projectName || "No Project Name"} (${data.strikeDate || "No Date"})`;
 
   const attachments = (files || []).map((f, i) => ({

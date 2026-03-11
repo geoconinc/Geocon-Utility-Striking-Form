@@ -17,8 +17,6 @@ const upload = multer({
   },
 });
 
-// ---- Email ----
-
 function createTransporter() {
   return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -71,15 +69,17 @@ function buildEmailHtml(data, attachmentCount = 0) {
 }
 
 function getEmailRecipients() {
-  const to = [process.env.EMAIL_TO || "mundra@Geoconinc.com"];
+  const to = [];
+  if (process.env.EMAIL_TO && process.env.EMAIL_TO.trim()) to.push(process.env.EMAIL_TO.trim());
   const legal = process.env.LEGAL_EMAIL || process.env.EMAIL_TO_LEGAL;
   if (legal && legal.trim()) to.push(legal.trim());
   return [...new Set(to)].join(", ");
 }
 
 async function sendEmail(data, files = []) {
-  const transporter = createTransporter();
   const recipients = getEmailRecipients();
+  if (!recipients) throw new Error("No email recipients configured. Set EMAIL_TO (and optionally LEGAL_EMAIL) in .env");
+  const transporter = createTransporter();
   const subject = `Utility Strike Report – ${data.projectName || "No Project Name"} (${data.strikeDate || "No Date"})`;
 
   const attachments = files.map((file, i) => ({
@@ -96,11 +96,7 @@ async function sendEmail(data, files = []) {
   });
 }
 
-// ---- Serve static frontend ----
-
 app.use(express.static(path.join(__dirname)));
-
-// ---- API endpoint ----
 
 app.post("/api/submit", upload.array("photos", 20), async (req, res) => {
   try {
@@ -115,8 +111,6 @@ app.post("/api/submit", upload.array("photos", 20), async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
-// ---- Start ----
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
