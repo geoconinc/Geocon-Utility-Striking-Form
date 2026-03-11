@@ -111,15 +111,20 @@ function createTransporter() {
   });
 }
 
-function buildEmailHtml(data, photoUrls) {
+function buildEmailHtml(data, photoUrls, attachmentCount = 0) {
   const field = (label, value) =>
     value ? `<tr><td style="padding:6px 12px;font-weight:600;vertical-align:top;white-space:nowrap;">${label}</td><td style="padding:6px 12px;">${value}</td></tr>` : "";
 
-  const photoSection =
-    photoUrls.length > 0
-      ? `<h3 style="margin-top:24px;">Attached Photos</h3>
-         <div>${photoUrls.map((url, i) => `<a href="${url}" target="_blank" style="margin-right:8px;"><img src="${url}" alt="Photo ${i + 1}" style="width:180px;height:auto;border-radius:4px;margin:4px;border:1px solid #ccc;"></a>`).join("")}</div>`
-      : "";
+  const hasAttachments = attachmentCount > 0;
+  const hasPreviewUrls = photoUrls.length > 0;
+  let photoSection = "";
+  if (hasAttachments || hasPreviewUrls) {
+    photoSection = `<h3 style="margin-top:24px;">Photos</h3>
+       <p style="margin-bottom:8px;color:#555;">${hasAttachments ? "Photo(s) are attached to this email — you can save or download them from the attachments." : ""}${hasAttachments && hasPreviewUrls ? " " : ""}${hasPreviewUrls ? "Preview links below:" : ""}</p>`;
+    if (hasPreviewUrls) {
+      photoSection += `<div>${photoUrls.map((url, i) => `<a href="${url}" target="_blank" style="margin-right:8px;"><img src="${url}" alt="Photo ${i + 1}" style="width:180px;height:auto;border-radius:4px;margin:4px;border:1px solid #ccc;"></a>`).join("")}</div>`;
+    }
+  }
 
   return `
     <div style="font-family:Segoe UI,Arial,sans-serif;max-width:680px;margin:0 auto;">
@@ -151,17 +156,29 @@ function buildEmailHtml(data, photoUrls) {
     </div>`;
 }
 
-async function sendEmail(data, photoUrls) {
-  const transporter = createTransporter();
+function getEmailRecipients() {
+  const to = [process.env.EMAIL_TO || "mundra@Geoconinc.com"];
+  const legal = process.env.LEGAL_EMAIL || process.env.EMAIL_TO_LEGAL;
+  if (legal && legal.trim()) to.push(legal.trim());
+  return [...new Set(to)].join(", ");
+}
 
-  const recipients = process.env.EMAIL_TO || "miranda@geoconinc.com";
+async function sendEmail(data, photoUrls, files = []) {
+  const transporter = createTransporter();
+  const recipients = getEmailRecipients();
   const subject = `Utility Strike Report – ${data.projectName || "No Project Name"} (${data.strikeDate || "No Date"})`;
+
+  const attachments = files.map((file, i) => ({
+    filename: file.originalname || `photo-${i + 1}.jpg`,
+    content: file.buffer,
+  }));
 
   await transporter.sendMail({
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to: recipients,
     subject,
-    html: buildEmailHtml(data, photoUrls),
+    html: buildEmailHtml(data, photoUrls, files.length),
+    attachments: attachments.length > 0 ? attachments : undefined,
   });
 }
 
@@ -171,26 +188,27 @@ app.use(express.static(path.join(__dirname)));
 
 // ---- API endpoint ----
 
+const useAzure = Boolean(process.env.AZURE_STORAGE_CONNECTION_STRING);
+
 app.post("/api/submit", upload.array("photos", 20), async (req, res) => {
   try {
     const reportId = uuidv4();
     const data = req.body;
     const files = req.files || [];
+    let photoUrls = [];
 
-    // Upload photos to Azure Blob Storage
-    const container = await ensureBlobContainer();
-    const photoUrls = [];
-    for (const file of files) {
-      const url = await uploadPhoto(container, file, reportId);
-      photoUrls.push(url);
+    if (useAzure) {
+      const container = await ensureBlobContainer();
+      for (const file of files) {
+        const url = await uploadPhoto(container, file, reportId);
+        photoUrls.push(url);
+      }
+      const table = await ensureTable();
+      await saveReport(table, reportId, data, photoUrls);
     }
 
-    // Save form data to Azure Table Storage
-    const table = await ensureTable();
-    await saveReport(table, reportId, data, photoUrls);
-
-    // Send email notification
-    await sendEmail(data, photoUrls);
+    // Email always sent: form data in body + photos as attachments (legal can save them)
+    await sendEmail(data, photoUrls, files);
 
     res.json({ success: true, reportId });
   } catch (err) {
