@@ -79,7 +79,11 @@ function buildEmailHtml(data, attachmentCount = 0) {
 
 function getEmailRecipients() {
   const to = [];
-  if (process.env.EMAIL_TO && process.env.EMAIL_TO.trim()) to.push(process.env.EMAIL_TO.trim());
+  const emailTo = process.env.EMAIL_TO || "";
+  emailTo.split(",").forEach((addr) => {
+    const a = addr.trim();
+    if (a) to.push(a);
+  });
   const legal = process.env.LEGAL_EMAIL || process.env.EMAIL_TO_LEGAL;
   if (legal && legal.trim()) to.push(legal.trim());
   return [...new Set(to)].join(", ");
