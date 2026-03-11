@@ -8,9 +8,11 @@ const nodemailer = require("nodemailer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const MAX_IMAGE_SIZE_BYTES = (parseInt(process.env.MAX_IMAGE_SIZE_MB || "20", 10) || 20) * 1024 * 1024;
+
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 15 * 1024 * 1024 },
+  limits: { fileSize: MAX_IMAGE_SIZE_BYTES },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
     else cb(new Error("Only image files are allowed."));

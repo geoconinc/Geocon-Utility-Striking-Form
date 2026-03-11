@@ -1,6 +1,8 @@
 const parser = require("lambda-multipart-parser");
 const nodemailer = require("nodemailer");
 
+const MAX_IMAGE_SIZE_BYTES = (parseInt(process.env.MAX_IMAGE_SIZE_MB || "20", 10) || 20) * 1024 * 1024;
+
 const FORM_FIELDS = [
   "projectNumber",
   "projectName",
@@ -115,6 +117,20 @@ exports.handler = async (event) => {
       data[key] = (parsed[key] != null ? String(parsed[key]).trim() : "") || "";
     }
     const files = parsed.files || [];
+
+    for (const f of files) {
+      const size = f.content && f.content.length ? f.content.length : 0;
+      if (size > MAX_IMAGE_SIZE_BYTES) {
+        return {
+          statusCode: 413,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            success: false,
+            error: `Image "${f.filename || "file"}" is too large. Maximum size is ${Math.round(MAX_IMAGE_SIZE_BYTES / (1024 * 1024))} MB per image.`,
+          }),
+        };
+      }
+    }
 
     await sendEmail(data, files);
 

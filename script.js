@@ -193,7 +193,14 @@ document.addEventListener("DOMContentLoaded", () => {
         body: formData,
       });
 
-      const result = await res.json();
+      const text = await res.text();
+      let result;
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch (e) {
+        console.error("Server response was not JSON. Status:", res.status, "Body:", text);
+        throw new Error("Server returned an invalid response. Check the browser console (F12) for details.");
+      }
 
       if (!res.ok || !result.success) {
         throw new Error(result.error || "Server returned an error.");
