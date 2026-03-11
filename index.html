@@ -181,10 +181,14 @@
             Water
           </label>
           <label class="checkbox-option">
-            <input type="checkbox" name="utilityType" value="Other">
+            <input type="checkbox" name="utilityType" value="Other" id="utilityTypeOtherCheck">
             <span class="checkbox-custom"></span>
             Other
           </label>
+        </div>
+        <div class="utility-other-wrap" id="utilityOtherWrap" style="display: none;">
+          <label for="utilityTypeOther" class="utility-other-label">Please specify:</label>
+          <input type="text" id="utilityTypeOther" name="utilityTypeOther" placeholder="e.g. Fiber optic, Unknown" class="utility-other-input">
         </div>
         <span class="error-msg"></span>
       </div>

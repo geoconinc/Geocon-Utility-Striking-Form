@@ -20,6 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // ---- Utility type "Other" — show text input when checked ----
+  const utilityOtherCheck = document.getElementById("utilityTypeOtherCheck");
+  const utilityOtherWrap = document.getElementById("utilityOtherWrap");
+  if (utilityOtherCheck && utilityOtherWrap) {
+    utilityOtherCheck.addEventListener("change", () => {
+      utilityOtherWrap.style.display = utilityOtherCheck.checked ? "block" : "none";
+    });
+  }
+
   // ---- Photo upload handling ----
   uploadArea.addEventListener("dragover", (e) => {
     e.preventDefault();
@@ -162,9 +171,12 @@ document.addEventListener("DOMContentLoaded", () => {
     data.append("locatorWhyNot", getValue("locatorWhyNot"));
     data.append("drillingSubcontractor", getValue("drillingSubcontractor"));
 
-    const utilityTypes = Array.from(
-      form.querySelectorAll('input[name="utilityType"]:checked')
-    ).map((cb) => cb.value);
+    const utilityTypeChecked = Array.from(form.querySelectorAll('input[name="utilityType"]:checked'));
+    const utilityTypeOtherText = getValue("utilityTypeOther");
+    const utilityTypes = utilityTypeChecked.map((cb) => {
+      if (cb.value === "Other" && utilityTypeOtherText) return "Other: " + utilityTypeOtherText;
+      return cb.value;
+    });
     data.append("utilityType", utilityTypes.join(", "));
 
     data.append("description", getValue("description"));
