@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Injury Reporting — Geocon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="form-container">
+    <a class="back-link" href="index.html">&larr; All report types</a>
+    <header class="form-header">
+      <div class="header-accent"></div>
+      <div class="header-content">
+        <img src="geocon_logo.png" alt="Geocon, Inc." class="logo">
+        <h1>Injury / Accident and Illness Report</h1>
+        <p class="form-description">
+          Complete all required fields below. No sign-in is needed.
+        </p>
+      </div>
+    </header>
+
+    <form data-report="injury" novalidate>
+      <input type="hidden" name="reportType" value="injury">
+
+      <div class="field required">
+        <label for="injuredEmployee">Injured Employee:</label>
+        <input type="text" id="injuredEmployee" name="injuredEmployee" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field required">
+        <label for="injuryDate">Date of Injury:</label>
+        <input type="date" id="injuryDate" name="injuryDate" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field required">
+        <label for="injuryTime">Time of Injury:</label>
+        <input type="time" id="injuryTime" name="injuryTime" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field required">
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" placeholder="Geocon office, job site, etc." required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field required">
+        <label for="workEngagedIn">Engaged in what work when injured?</label>
+        <textarea id="workEngagedIn" name="workEngagedIn" rows="3" placeholder="Enter your answer" required></textarea>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field required">
+        <label for="bodyParts">Parts of body affected:</label>
+        <input type="text" id="bodyParts" name="bodyParts" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field">
+        <label for="lastDayWorked">Last day worked:</label>
+        <input type="date" id="lastDayWorked" name="lastDayWorked">
+      </div>
+
+      <div class="field">
+        <label for="witnesses">Witnesses:</label>
+        <input type="text" id="witnesses" name="witnesses" placeholder="Enter your answer">
+      </div>
+
+      <div class="field required">
+        <label for="accidentDescription">Description of accident:</label>
+        <p class="field-note">Please be as specific and detailed as possible.</p>
+        <textarea id="accidentDescription" name="accidentDescription" rows="5" placeholder="Enter your answer" required></textarea>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field required">
+        <label for="injuryNature">Nature and extent of injury:</label>
+        <textarea id="injuryNature" name="injuryNature" rows="3" placeholder="Enter your answer" required></textarea>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field">
+        <label for="unsafeCondition">What unsafe condition or act caused the accident?</label>
+        <textarea id="unsafeCondition" name="unsafeCondition" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="preventiveAction">What action have you taken to prevent similar accidents?</label>
+        <textarea id="preventiveAction" name="preventiveAction" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="factsVerified">Did you verify the facts under the description? How?</label>
+        <textarea id="factsVerified" name="factsVerified" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field required">
+        <label for="supervisor">Supervisor:</label>
+        <input type="text" id="supervisor" name="supervisor" placeholder="Enter your answer" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field">
+        <label for="supervisorDate">Date reported to supervisor:</label>
+        <input type="date" id="supervisorDate" name="supervisorDate">
+      </div>
+
+      <div class="field">
+        <label>Upload Photos:</label>
+        <p class="field-note">Optional. Photos of the location, equipment, or conditions involved.</p>
+        <div class="upload-area" id="uploadArea">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p>Tap to select photos or drag &amp; drop</p>
+          <input type="file" id="photoUpload" name="photos" multiple accept="image/*">
+        </div>
+        <div class="photo-preview" id="photoPreview"></div>
+      </div>
+
+      <div class="form-section">
+        <h2>Supervisor / Investigation</h2>
+        <p>
+          This section is completed by a supervisor or investigator and may be left blank
+          by the reporting employee.
+        </p>
+      </div>
+
+      <div class="field">
+        <label>Was a Code of Safe Practice violated?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="safePracticeViolated" value="Yes">
+            Yes
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="safePracticeViolated" value="No">
+            No
+          </label>
+        </div>
+      </div>
+
+      <div class="field conditional" data-show-when="safePracticeViolated:Yes" style="display:none;">
+        <label for="safePracticeWhich">If so, which one?</label>
+        <textarea id="safePracticeWhich" name="safePracticeWhich" rows="2" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Will an additional Code of Safe Practice be needed?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="additionalCodeNeeded" value="Yes">
+            Yes
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="additionalCodeNeeded" value="No">
+            No
+          </label>
+        </div>
+      </div>
+
+      <div class="field conditional" data-show-when="additionalCodeNeeded:Yes" style="display:none;">
+        <label for="additionalCodeDetail">If so, state it:</label>
+        <textarea id="additionalCodeDetail" name="additionalCodeDetail" rows="2" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Was the unsafe condition, practice, or protective equipment problem corrected immediately?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="correctedImmediately" value="Yes">
+            Yes
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="correctedImmediately" value="No">
+            No
+          </label>
+        </div>
+      </div>
+
+      <div class="field conditional" data-show-when="correctedImmediately:No" style="display:none;">
+        <label for="interimActions">
+          If not corrected, what actions should be taken to prevent recurrence until correction is completed?
+        </label>
+        <textarea id="interimActions" name="interimActions" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="correctiveActionDate">Date of corrective action:</label>
+        <input type="date" id="correctiveActionDate" name="correctiveActionDate">
+      </div>
+
+      <div class="field">
+        <label>
+          Will the Workplace Inspection Checklist and Correction Form for the area require
+          modification to prevent recurrence?
+        </label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="checklistModification" value="Yes">
+            Yes
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="checklistModification" value="No">
+            No
+          </label>
+        </div>
+      </div>
+
+      <div class="field conditional" data-show-when="checklistModification:Yes" style="display:none;">
+        <label for="checklistAdditions">If so, what should be added?</label>
+        <textarea id="checklistAdditions" name="checklistAdditions" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="investigators">Investigator name(s) and title(s):</label>
+        <p class="field-note">Typing a name here stands in place of a signature.</p>
+        <input type="text" id="investigators" name="investigators" placeholder="Enter your answer">
+      </div>
+
+      <div class="field">
+        <label for="investigationDate">Investigation date:</label>
+        <input type="date" id="investigationDate" name="investigationDate">
+      </div>
+
+      <div class="field">
+        <label for="correctiveActionOwner">Person responsible for corrective actions:</label>
+        <input type="text" id="correctiveActionOwner" name="correctiveActionOwner" placeholder="Enter your answer">
+      </div>
+
+      <div class="field">
+        <label for="reportReceivedDate">Copy of this report received by the above person on:</label>
+        <input type="date" id="reportReceivedDate" name="reportReceivedDate">
+      </div>
+
+      <div class="field">
+        <label for="managementApproval">Management approval (name and title):</label>
+        <input type="text" id="managementApproval" name="managementApproval" placeholder="Enter your answer">
+      </div>
+
+      <button type="submit" class="submit-btn">Submit</button>
+    </form>
+
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-card">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <h2>Report Submitted</h2>
+        <p>Your Injury Report has been submitted successfully.</p>
+        <button class="submit-btn" onclick="location.reload()">Submit Another Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="report.js"></script>
+</body>
+</html>

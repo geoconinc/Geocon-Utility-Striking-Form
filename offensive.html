@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offensive Behavior Reporting — Geocon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="form-container">
+    <a class="back-link" href="index.html">&larr; All report types</a>
+    <header class="form-header">
+      <div class="header-accent"></div>
+      <div class="header-content">
+        <img src="geocon_logo.png" alt="Geocon, Inc." class="logo">
+        <h1>Offensive Behavior Report</h1>
+        <p class="form-description">
+          Please complete this form if you witness or experience offensive behavior.
+          This form does not collect your name or email address unless you provide them yourself.
+        </p>
+      </div>
+    </header>
+
+    <form data-report="offensive" novalidate>
+      <input type="hidden" name="reportType" value="offensive">
+
+      <div class="field">
+        <label for="reporterName">What is your name?</label>
+        <p class="field-note">Optional. Leave blank to report anonymously.</p>
+        <input type="text" id="reporterName" name="reporterName" placeholder="Enter your answer">
+      </div>
+
+      <div class="field">
+        <label for="affectedPersons">
+          Name(s) of person(s) experiencing the offensive behavior, if not the same as above:
+        </label>
+        <input type="text" id="affectedPersons" name="affectedPersons" placeholder="Enter your answer">
+      </div>
+
+      <div class="field">
+        <label for="accusedPersons">Name(s) of person(s) committing the offensive behavior:</label>
+        <input type="text" id="accusedPersons" name="accusedPersons" placeholder="Enter your answer">
+      </div>
+
+      <div class="field required">
+        <label for="incidentDate">Date the offensive behavior took place:</label>
+        <input type="date" id="incidentDate" name="incidentDate" required>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field">
+        <label for="incidentLocation">Location(s) of offensive behavior:</label>
+        <p class="field-note">Geocon office, job site, etc.</p>
+        <input type="text" id="incidentLocation" name="incidentLocation" placeholder="Enter your answer">
+      </div>
+
+      <div class="field required">
+        <label for="behaviorDescription">Offensive behavior:</label>
+        <p class="field-note">Please be as specific and detailed as possible.</p>
+        <textarea id="behaviorDescription" name="behaviorDescription" rows="6" placeholder="Enter your answer" required></textarea>
+        <span class="error-msg"></span>
+      </div>
+
+      <div class="field">
+        <label for="witnesses">Witness(es), if any:</label>
+        <input type="text" id="witnesses" name="witnesses" placeholder="Enter your answer">
+      </div>
+
+      <button type="submit" class="submit-btn">Submit</button>
+    </form>
+
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-card">
+        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <h2>Report Submitted</h2>
+        <p>Your report has been submitted successfully and sent to Human Resources.</p>
+        <button class="submit-btn" onclick="location.reload()">Submit Another Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="report.js"></script>
+</body>
+</html>

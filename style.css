@@ -445,3 +445,117 @@ textarea {
     max-height: 48px;
   }
 }
+
+/* ============================================================
+   Report menu and the injury / offensive behavior forms.
+   Everything above this line is the original utility strike styling.
+   ============================================================ */
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+  color: var(--primary-light);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.report-options {
+  background: var(--card);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.report-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.report-option:last-child {
+  border-bottom: none;
+}
+
+.report-option:hover,
+.report-option:focus-visible {
+  outline: none;
+  background: var(--primary-pale);
+}
+
+.report-option-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  color: var(--primary-light);
+}
+
+.report-option-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.report-option-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.report-option-note {
+  font-size: 0.84rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+.report-option-arrow {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  color: var(--text-light);
+}
+
+/* Divider introducing a distinct group of questions within a form. */
+.form-section {
+  padding: 22px 28px 18px;
+  background: var(--primary-pale);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.form-section h2 {
+  font-size: 1.05rem;
+  color: var(--primary);
+}
+
+.form-section p {
+  margin-top: 4px;
+  font-size: 0.86rem;
+  color: var(--text-light);
+}
+
+@media (max-width: 600px) {
+  .report-options {
+    border-radius: 0;
+  }
+
+  .back-link {
+    margin: 12px 20px 8px;
+  }
+
+  .report-option {
+    padding: 16px 20px;
+  }
+
+  .form-section {
+    padding: 18px 20px 14px;
+  }
+}

@@ -7,3 +7,10 @@
 
 [functions]
   node_bundler = "esbuild"
+
+# Injury and offensive behavior forms only. The utility strike form posts
+# straight to /.netlify/functions/submit and is unaffected by this rewrite.
+[[redirects]]
+  from = "/api/submit-report"
+  to = "/.netlify/functions/submit-report"
+  status = 200

@@ -2,3 +2,9 @@
 .env.local
 .env.*.local
 node_modules/
+
+# Local Netlify folder
+.netlify
+
+# Local testing harness, screenshots, and captured dev emails
+.screenshots/
