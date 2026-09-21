@@ -5,7 +5,7 @@ const multer = require("multer");
 const path = require("path");
 const nodemailer = require("nodemailer");
 const { getReport, getFieldNames } = require("./lib/reports");
-const { sendReportEmail } = require("./lib/email");
+const { sendReportEmail, validateExtraRecipient } = require("./lib/email");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -130,16 +130,21 @@ app.post("/api/submit-report", upload.array("photos", 20), async (req, res) => {
       return res.status(400).json({ success: false, error: "Unknown report type." });
     }
 
+    const data = {};
+    for (const name of getFieldNames(report)) {
+      data[name] = req.body[name] != null ? String(req.body[name]).trim() : "";
+    }
+
+    const recipientError = validateExtraRecipient(report, data);
+    if (recipientError) {
+      return res.status(400).json({ success: false, error: recipientError });
+    }
+
     const files = report.acceptsPhotos ? req.files || [] : [];
     const attachments = files.map((file, index) => ({
       filename: file.originalname || `photo-${index + 1}.jpg`,
       content: file.buffer,
     }));
-
-    const data = {};
-    for (const name of getFieldNames(report)) {
-      data[name] = req.body[name] != null ? String(req.body[name]).trim() : "";
-    }
 
     await sendReportEmail(report, data, attachments);
 

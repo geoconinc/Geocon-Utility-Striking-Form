@@ -99,14 +99,13 @@
       </div>
 
       <div class="field required">
-        <label for="supervisor">Supervisor:</label>
-        <input type="text" id="supervisor" name="supervisor" placeholder="Enter your answer" required>
+        <label for="managerEmail">Manager's email address:</label>
+        <p class="field-note">
+          Your manager will be emailed a copy of this report to complete the
+          Supervisor / Investigation section below. Must be a @geoconinc.com address.
+        </p>
+        <input type="email" id="managerEmail" name="managerEmail" placeholder="name@geoconinc.com" required inputmode="email">
         <span class="error-msg"></span>
-      </div>
-
-      <div class="field">
-        <label for="supervisorDate">Date reported to supervisor:</label>
-        <input type="date" id="supervisorDate" name="supervisorDate">
       </div>
 
       <div class="field">
@@ -127,8 +126,8 @@
       <div class="form-section">
         <h2>Supervisor / Investigation</h2>
         <p>
-          This section is completed by a supervisor or investigator and may be left blank
-          by the reporting employee.
+          This section is completed by the manager and may be left blank by the
+          reporting employee.
         </p>
       </div>
 
@@ -184,6 +183,11 @@
         </div>
       </div>
 
+      <div class="field conditional" data-show-when="correctedImmediately:Yes" style="display:none;">
+        <label for="correctedHow">If yes, how?</label>
+        <textarea id="correctedHow" name="correctedHow" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
       <div class="field conditional" data-show-when="correctedImmediately:No" style="display:none;">
         <label for="interimActions">
           If not corrected, what actions should be taken to prevent recurrence until correction is completed?
@@ -219,28 +223,8 @@
       </div>
 
       <div class="field">
-        <label for="investigators">Investigator name(s) and title(s):</label>
-        <p class="field-note">Typing a name here stands in place of a signature.</p>
-        <input type="text" id="investigators" name="investigators" placeholder="Enter your answer">
-      </div>
-
-      <div class="field">
-        <label for="investigationDate">Investigation date:</label>
-        <input type="date" id="investigationDate" name="investigationDate">
-      </div>
-
-      <div class="field">
-        <label for="correctiveActionOwner">Person responsible for corrective actions:</label>
-        <input type="text" id="correctiveActionOwner" name="correctiveActionOwner" placeholder="Enter your answer">
-      </div>
-
-      <div class="field">
-        <label for="reportReceivedDate">Copy of this report received by the above person on:</label>
-        <input type="date" id="reportReceivedDate" name="reportReceivedDate">
-      </div>
-
-      <div class="field">
         <label for="managementApproval">Management approval (name and title):</label>
+        <p class="field-note">Typing a name here stands in place of a signature.</p>
         <input type="text" id="managementApproval" name="managementApproval" placeholder="Enter your answer">
       </div>
 

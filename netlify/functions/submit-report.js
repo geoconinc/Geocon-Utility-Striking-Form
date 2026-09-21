@@ -3,7 +3,7 @@
 
 const parser = require("lambda-multipart-parser");
 const { getReport, getFieldNames } = require("../../lib/reports");
-const { MAX_IMAGE_SIZE_BYTES, sendReportEmail } = require("../../lib/email");
+const { MAX_IMAGE_SIZE_BYTES, sendReportEmail, validateExtraRecipient } = require("../../lib/email");
 
 function jsonResponse(statusCode, body) {
   return {
@@ -33,6 +33,12 @@ exports.handler = async (event) => {
       return jsonResponse(400, { success: false, error: "Unknown report type." });
     }
 
+    const data = collectFields(report, parsed);
+    const recipientError = validateExtraRecipient(report, data);
+    if (recipientError) {
+      return jsonResponse(400, { success: false, error: recipientError });
+    }
+
     const files = report.acceptsPhotos ? parsed.files || [] : [];
     const oversized = files.find((file) => (file.content ? file.content.length : 0) > MAX_IMAGE_SIZE_BYTES);
     if (oversized) {
@@ -48,7 +54,7 @@ exports.handler = async (event) => {
       content: file.content,
     }));
 
-    await sendReportEmail(report, collectFields(report, parsed), attachments);
+    await sendReportEmail(report, data, attachments);
 
     return jsonResponse(200, { success: true });
   } catch (err) {
