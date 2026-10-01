@@ -38,7 +38,11 @@ An injury report is filled in by two people, and **HR only receives it once it i
 
 1. The employee files the report and names their manager. **Only the manager** is emailed, subject-lined *"Action needed: complete the injury report for …"*. HR is not on this email.
 2. That email contains a **Complete this report** button. The employee's answers and photos are saved to Azure under a random id the button's link carries, so the manager's form opens already filled in — they only add the Supervisor / Investigation section.
-3. On that submit, HR gets a single *"Injury Report – …"* email containing both halves, with the employee's original photos attached. The saved copy is deleted immediately afterwards.
+3. Typing a name into **Management approval** is what marks the report complete, and it is required of whoever opens a saved report. On that submit, HR gets a single *"Injury Report – …"* email containing both halves, with the employee's original photos attached. The saved copy is deleted immediately afterwards.
+
+Completion is deliberately tied to the sign-off rather than to "any investigation field has an answer in it". The investigation questions stay visible and optional for the employee, so treating any of them as the signal would let a helpful employee mark their own report complete and skip the manager.
+
+Where the form splits follows the paper original (`Geocon Injury_Accident and Illness Investigation Form_fillable.pdf`): the employee answers down to *Nature and extent of injury*, and everything from *What unsafe condition or act caused the accident?* onward sits above the SUPERVISOR signature line on page one, so it belongs to the manager.
 
 Because HR is not on the first email, the manager's address is required — without it the report would reach nobody, so a filing without one is rejected rather than silently going nowhere.
 

@@ -87,21 +87,6 @@
         <span class="error-msg"></span>
       </div>
 
-      <div class="field">
-        <label for="unsafeCondition">What unsafe condition or act caused the accident?</label>
-        <textarea id="unsafeCondition" name="unsafeCondition" rows="3" placeholder="Enter your answer"></textarea>
-      </div>
-
-      <div class="field">
-        <label for="preventiveAction">What action have you taken to prevent similar accidents?</label>
-        <textarea id="preventiveAction" name="preventiveAction" rows="3" placeholder="Enter your answer"></textarea>
-      </div>
-
-      <div class="field">
-        <label for="factsVerified">Did you verify the facts under the description? How?</label>
-        <textarea id="factsVerified" name="factsVerified" rows="3" placeholder="Enter your answer"></textarea>
-      </div>
-
       <div class="field required">
         <label for="managerEmail">Manager's email address:</label>
         <p class="field-note">
@@ -133,6 +118,21 @@
           This section is completed by the manager and may be left blank by the
           reporting employee.
         </p>
+      </div>
+
+      <div class="field">
+        <label for="unsafeCondition">What unsafe condition or act caused the accident?</label>
+        <textarea id="unsafeCondition" name="unsafeCondition" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="preventiveAction">What action have you taken to prevent similar accidents?</label>
+        <textarea id="preventiveAction" name="preventiveAction" rows="3" placeholder="Enter your answer"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="factsVerified">Did you verify the facts under the description? How?</label>
+        <textarea id="factsVerified" name="factsVerified" rows="3" placeholder="Enter your answer"></textarea>
       </div>
 
       <div class="field">
@@ -226,10 +226,14 @@
         <textarea id="checklistAdditions" name="checklistAdditions" rows="3" placeholder="Enter your answer"></textarea>
       </div>
 
-      <div class="field">
+      <div class="field" data-required-on-draft>
         <label for="managementApproval">Management approval (name and title):</label>
-        <p class="field-note">Typing a name here stands in place of a signature.</p>
+        <p class="field-note">
+          Typing a name here stands in place of a signature. It is what marks the
+          report complete and sends it to HR, so the manager fills this in last.
+        </p>
         <input type="text" id="managementApproval" name="managementApproval" placeholder="Enter your answer">
+        <span class="error-msg"></span>
       </div>
 
       <button type="submit" class="submit-btn">Submit</button>

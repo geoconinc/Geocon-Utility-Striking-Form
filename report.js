@@ -5,6 +5,8 @@
 //   - a hidden `reportType` input selects the server-side report definition
 //   - `data-show-when="name:value"` reveals a field only while that option is picked
 //   - a `?draft=` id in the URL prefills the form from a saved submission
+//   - `data-required-on-draft` makes a field mandatory only for whoever is
+//     completing a saved submission, not for whoever started it
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("form[data-report]");
@@ -94,6 +96,12 @@ async function initDraftPrefill(form) {
 
     applyDraft(form, result.data);
     form.querySelector('[name="draftId"]').value = draftId;
+
+    // Signing off is what sends the report on, so it can't be skipped by the
+    // person completing it — though it stays optional for the employee filing.
+    for (const field of form.querySelectorAll("[data-required-on-draft]")) {
+      field.classList.add("required");
+    }
 
     renderDraftBanner(banner, "loaded", describeDraft(result), {
       href: "#investigationSection",
