@@ -44,9 +44,17 @@ Storage is treated as a convenience, never a dependency: every draft operation i
 
 ### Storage (Azure)
 
-Injury details are held in Geocon's own Azure tenant rather than a third party. Drafts live in the **`injury-drafts`** container of the `proposalsections` storage account, one JSON blob per report, created automatically on first use.
+Injury details are held in Geocon's own Azure tenant rather than a third party.
 
-Because that container holds injury and medical information between the two stages, treat its access keys as sensitive — anyone with the connection string can read every pending report. Scoping a container-level SAS token for this app instead of using an account key is worth doing if other teams share the account.
+| | |
+| --- | --- |
+| Storage account | `geoconhrreports` |
+| Resource group | `Geocon-HR-Reports` (subscription `GeoconAzure`, West US) |
+| Container | `injury-drafts` — one JSON blob per report, created automatically on first use |
+
+The account is dedicated to HR reporting rather than shared with another system, so its access can be granted and revoked without touching anything else. It is configured with anonymous blob access disabled, HTTPS required, TLS 1.2 minimum, and blob soft delete reduced from the 7-day default to 1 day.
+
+Treat the access keys as sensitive: anyone holding the connection string can read every pending injury report, which contains medical information. A draft's real lifetime is `DRAFT_RETENTION_DAYS` plus the 1-day soft-delete window.
 
 ---
 
