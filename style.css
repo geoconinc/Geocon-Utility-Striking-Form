@@ -542,6 +542,21 @@ textarea {
   color: var(--text-light);
 }
 
+/* The success card's action is a link back to the menu rather than a button, so
+   it needs the centring a <button> gets for free. The strike form still uses a
+   <button> there and is unaffected by this rule. */
+a.submit-btn {
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+}
+
+.redirect-note {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: var(--text-light);
+}
+
 /* Shown to a manager opening the emailed link to finish someone's report. */
 .draft-banner {
   margin: 0 28px 4px;

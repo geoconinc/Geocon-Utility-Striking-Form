@@ -8,6 +8,9 @@
 //   - `data-required-on-draft` makes a field mandatory only for whoever is
 //     completing a saved submission, not for whoever started it
 
+// Long enough to read the confirmation, short enough not to feel stuck.
+const RETURN_TO_MENU_DELAY_MS = 4000;
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("form[data-report]");
   if (!form) return;
@@ -64,10 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit";
-      // The saved copy is consumed once the report sends, so a reload from the
-      // success card shouldn't try to load it again.
+      // The saved copy is consumed once the report sends, so going back in the
+      // browser afterwards shouldn't try to load it again.
       clearDraftParam();
       successOverlay.classList.add("visible");
+      // Back to the menu, so the next person starts from the right place
+      // instead of a filled-in form they might resubmit.
+      setTimeout(() => window.location.assign("index.html"), RETURN_TO_MENU_DELAY_MS);
     } catch (err) {
       alert("Submission failed: " + err.message + "\nPlease try again.");
       submitBtn.disabled = false;
