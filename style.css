@@ -542,6 +542,36 @@ textarea {
   color: var(--text-light);
 }
 
+/* Shown to a manager opening the emailed link to finish someone's report. */
+.draft-banner {
+  margin: 0 28px 4px;
+  padding: 14px 18px;
+  border: 1px solid;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.draft-banner.loading,
+.draft-banner.loaded {
+  background: var(--primary-pale);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.draft-banner.warning {
+  background: #fff4e5;
+  border-color: #e0a458;
+  color: #7a4e00;
+}
+
+.draft-banner a {
+  display: inline-block;
+  margin-top: 8px;
+  color: inherit;
+  font-weight: 600;
+}
+
 @media (max-width: 600px) {
   .report-options {
     border-radius: 0;
@@ -549,6 +579,10 @@ textarea {
 
   .back-link {
     margin: 12px 20px 8px;
+  }
+
+  .draft-banner {
+    margin: 0 20px 4px;
   }
 
   .report-option {

@@ -3,7 +3,7 @@
   functions = "netlify/functions"
   # Don't fail build when these env var *values* appear in repo (e.g. docs/examples). Real secret is SMTP_PASS.
   [build.environment]
-    SECRETS_SCAN_OMIT_KEYS = "SMTP_HOST,EMAIL_TO,LEGAL_EMAIL,HR_EMAIL_TO,PORT"
+    SECRETS_SCAN_OMIT_KEYS = "SMTP_HOST,EMAIL_TO,LEGAL_EMAIL,HR_EMAIL_TO,PORT,SITE_URL,MAX_IMAGE_SIZE_MB,DRAFT_RETENTION_DAYS"
 
 [functions]
   node_bundler = "esbuild"
@@ -13,4 +13,10 @@
 [[redirects]]
   from = "/api/submit-report"
   to = "/.netlify/functions/submit-report"
+  status = 200
+
+# Lets a manager's emailed link load the employee's half of the injury report.
+[[redirects]]
+  from = "/api/draft"
+  to = "/.netlify/functions/draft"
   status = 200

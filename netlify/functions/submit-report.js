@@ -2,24 +2,9 @@
 // its own untouched endpoint in submit.js.
 
 const parser = require("lambda-multipart-parser");
-const { getReport, getFieldNames } = require("../../lib/reports");
-const { MAX_IMAGE_SIZE_BYTES, sendReportEmail, validateExtraRecipient } = require("../../lib/email");
-
-function jsonResponse(statusCode, body) {
-  return {
-    statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
-
-function collectFields(report, parsed) {
-  const data = {};
-  for (const name of getFieldNames(report)) {
-    data[name] = parsed[name] != null ? String(parsed[name]).trim() : "";
-  }
-  return data;
-}
+const draftStore = require("../../lib/draft-store-netlify");
+const { submitReport } = require("../../lib/submit-report");
+const { jsonResponse, toErrorResponse } = require("../../lib/http");
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -28,37 +13,16 @@ exports.handler = async (event) => {
 
   try {
     const parsed = await parser.parse(event);
-    const report = getReport(parsed.reportType);
-    if (!report) {
-      return jsonResponse(400, { success: false, error: "Unknown report type." });
-    }
-
-    const data = collectFields(report, parsed);
-    const recipientError = validateExtraRecipient(report, data);
-    if (recipientError) {
-      return jsonResponse(400, { success: false, error: recipientError });
-    }
-
-    const files = report.acceptsPhotos ? parsed.files || [] : [];
-    const oversized = files.find((file) => (file.content ? file.content.length : 0) > MAX_IMAGE_SIZE_BYTES);
-    if (oversized) {
-      const limitMb = Math.round(MAX_IMAGE_SIZE_BYTES / (1024 * 1024));
-      return jsonResponse(413, {
-        success: false,
-        error: `Image "${oversized.filename || "file"}" is too large. Maximum size is ${limitMb} MB per image.`,
-      });
-    }
-
-    const attachments = files.map((file, index) => ({
+    const files = (parsed.files || []).map((file, index) => ({
       filename: file.filename || `photo-${index + 1}.jpg`,
-      content: file.content,
+      content: file.content || Buffer.alloc(0),
     }));
 
-    await sendReportEmail(report, data, attachments);
+    await submitReport({ body: parsed, files, draftStore });
 
     return jsonResponse(200, { success: true });
   } catch (err) {
-    console.error("Report submit error:", err);
-    return jsonResponse(500, { success: false, error: "Could not send the report. Please try again." });
+    const { status, body } = toErrorResponse(err, "Could not send the report. Please try again.");
+    return jsonResponse(status, body);
   }
 };

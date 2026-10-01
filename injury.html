@@ -21,8 +21,12 @@
       </div>
     </header>
 
+    <!-- Filled in by report.js when a manager opens their emailed link. -->
+    <div class="draft-banner" id="draftBanner" hidden></div>
+
     <form data-report="injury" novalidate>
       <input type="hidden" name="reportType" value="injury">
+      <input type="hidden" name="draftId" value="">
 
       <div class="field required">
         <label for="injuredEmployee">Injured Employee:</label>
@@ -123,7 +127,7 @@
         <div class="photo-preview" id="photoPreview"></div>
       </div>
 
-      <div class="form-section">
+      <div class="form-section" id="investigationSection">
         <h2>Supervisor / Investigation</h2>
         <p>
           This section is completed by the manager and may be left blank by the

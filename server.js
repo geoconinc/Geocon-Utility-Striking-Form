@@ -4,8 +4,9 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const { getReport, getFieldNames } = require("./lib/reports");
-const { sendReportEmail, validateExtraRecipient } = require("./lib/email");
+const draftStore = require("./lib/draft-store-file");
+const { submitReport, readDraftForPrefill } = require("./lib/submit-report");
+const { toErrorResponse } = require("./lib/http");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -120,38 +121,32 @@ app.post("/api/submit", upload.array("photos", 20), async (req, res) => {
   }
 });
 
-// Local mirror of netlify/functions/submit-report.js for the injury and
-// offensive behavior forms. The /api/submit route above is untouched and still
-// serves the utility strike form.
+// Local mirrors of netlify/functions/submit-report.js and draft.js for the
+// injury and offensive behavior forms. The /api/submit route above is untouched
+// and still serves the utility strike form.
 app.post("/api/submit-report", upload.array("photos", 20), async (req, res) => {
   try {
-    const report = getReport(req.body.reportType);
-    if (!report) {
-      return res.status(400).json({ success: false, error: "Unknown report type." });
-    }
-
-    const data = {};
-    for (const name of getFieldNames(report)) {
-      data[name] = req.body[name] != null ? String(req.body[name]).trim() : "";
-    }
-
-    const recipientError = validateExtraRecipient(report, data);
-    if (recipientError) {
-      return res.status(400).json({ success: false, error: recipientError });
-    }
-
-    const files = report.acceptsPhotos ? req.files || [] : [];
-    const attachments = files.map((file, index) => ({
+    const files = (req.files || []).map((file, index) => ({
       filename: file.originalname || `photo-${index + 1}.jpg`,
       content: file.buffer,
     }));
 
-    await sendReportEmail(report, data, attachments);
+    await submitReport({ body: req.body, files, draftStore });
 
     res.json({ success: true });
   } catch (err) {
-    console.error("Report submission error:", err);
-    res.status(500).json({ success: false, error: "Could not send the report. Please try again." });
+    const { status, body } = toErrorResponse(err, "Could not send the report. Please try again.");
+    res.status(status).json(body);
+  }
+});
+
+app.get("/api/draft", async (req, res) => {
+  try {
+    const payload = await readDraftForPrefill(draftStore, req.query.id);
+    res.json({ success: true, ...payload });
+  } catch (err) {
+    const { status, body } = toErrorResponse(err, "Could not load the saved report.");
+    res.status(status).json(body);
   }
 });
 

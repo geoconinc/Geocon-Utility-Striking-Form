@@ -4,6 +4,7 @@
 // Forms drive this script through markup:
 //   - a hidden `reportType` input selects the server-side report definition
 //   - `data-show-when="name:value"` reveals a field only while that option is picked
+//   - a `?draft=` id in the URL prefills the form from a saved submission
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector("form[data-report]");
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initConditionals(form);
   const getPhotos = initPhotoUpload(form);
+  initDraftPrefill(form);
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -60,6 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit";
+      // The saved copy is consumed once the report sends, so a reload from the
+      // success card shouldn't try to load it again.
+      clearDraftParam();
       successOverlay.classList.add("visible");
     } catch (err) {
       alert("Submission failed: " + err.message + "\nPlease try again.");
@@ -68,6 +73,92 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+// A manager arriving from the link in their email carries the id of the report
+// the employee already filled in, so the form loads their answers rather than
+// asking for them a second time. Their photos stay server side and are
+// re-attached when the completed report is sent.
+async function initDraftPrefill(form) {
+  const draftId = new URLSearchParams(window.location.search).get("draft");
+  if (!draftId) return;
+
+  const banner = document.getElementById("draftBanner");
+  renderDraftBanner(banner, "loading", "Loading the employee's answers…");
+
+  try {
+    const res = await fetch(`/api/draft?id=${encodeURIComponent(draftId)}`);
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok || !result.success) {
+      throw new Error(result.error || "This link has expired or the report has already been completed.");
+    }
+
+    applyDraft(form, result.data);
+    form.querySelector('[name="draftId"]').value = draftId;
+
+    renderDraftBanner(banner, "loaded", describeDraft(result), {
+      href: "#investigationSection",
+      label: "Go to the Supervisor / Investigation section",
+    });
+  } catch (err) {
+    renderDraftBanner(banner, "warning", `${err.message} Please fill the form in manually.`);
+  }
+}
+
+function describeDraft({ data, photoCount }) {
+  const employee = data.injuredEmployee || "an employee";
+  const photos = photoCount
+    ? ` The ${photoCount} photo${photoCount === 1 ? "" : "s"} from the original report will be included automatically.`
+    : "";
+
+  return (
+    `This report was filed for ${employee} and their answers are already filled in below. ` +
+    `Review them, then complete the Supervisor / Investigation section.${photos}`
+  );
+}
+
+function applyDraft(form, values) {
+  for (const [name, value] of Object.entries(values)) {
+    if (!value) continue;
+
+    for (const element of form.querySelectorAll(`[name="${CSS.escape(name)}"]`)) {
+      if (element.type === "file") continue;
+      if (element.type === "radio" || element.type === "checkbox") element.checked = element.value === value;
+      else element.value = value;
+    }
+  }
+
+  // Reveals any conditional field whose trigger was just answered.
+  form.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+// Values are inserted as text rather than markup, so a name typed into the
+// original report can't run as HTML here.
+function renderDraftBanner(banner, tone, message, link) {
+  if (!banner) return;
+
+  banner.hidden = false;
+  banner.className = `draft-banner ${tone}`;
+  banner.textContent = "";
+
+  const paragraph = document.createElement("p");
+  paragraph.textContent = message;
+  banner.appendChild(paragraph);
+
+  if (!link) return;
+
+  const anchor = document.createElement("a");
+  anchor.href = link.href;
+  anchor.textContent = link.label;
+  banner.appendChild(anchor);
+}
+
+function clearDraftParam() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("draft")) return;
+
+  url.searchParams.delete("draft");
+  window.history.replaceState({}, "", url);
+}
 
 function initConditionals(form) {
   const conditionals = Array.from(form.querySelectorAll("[data-show-when]"));

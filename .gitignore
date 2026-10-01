@@ -8,3 +8,6 @@ node_modules/
 
 # Local testing harness, screenshots, and captured dev emails
 .screenshots/
+
+# Reports saved locally while awaiting a manager's investigation
+.drafts/
