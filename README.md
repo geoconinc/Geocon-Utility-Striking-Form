@@ -37,10 +37,16 @@ The utility strike form is self-contained: `script.js` and `netlify/functions/su
 An injury report reaches HR twice, because the investigation half is the manager's job and shouldn't delay HR seeing the incident:
 
 1. The employee files the report and names their manager. HR and the manager both get an email subject-lined **"Initial, investigation pending"**.
-2. That email contains a **Complete this report** button. The employee's answers and photos are saved to [Netlify Blobs](https://docs.netlify.com/build/data-and-storage/netlify-blobs/) under a random id that the button's link carries, so the manager's form opens already filled in — they only add the Supervisor / Investigation section.
+2. That email contains a **Complete this report** button. The employee's answers and photos are saved to Azure Blob Storage under a random id that the button's link carries, so the manager's form opens already filled in — they only add the Supervisor / Investigation section.
 3. On that second submit, HR gets a **"Completed"** email containing both halves, with the employee's original photos re-attached. The saved copy is then deleted.
 
-Netlify provisions blob storage automatically, so there is nothing to configure. If it is ever unavailable the report still emails normally; the manager's form just opens blank. Unfinished reports are discarded after `DRAFT_RETENTION_DAYS` (default 90).
+Storage is treated as a convenience, never a dependency: every draft operation is capped at `DRAFT_TIMEOUT_MS` (default 3000) and failures are logged and stepped over. If Azure is slow or unreachable the report still emails normally and the manager's form simply opens blank, as it did before this existed. Anything left unfinished expires after `DRAFT_RETENTION_DAYS` (default 90).
+
+### Storage (Azure)
+
+Injury details are held in Geocon's own Azure tenant rather than a third party. Drafts live in the **`injury-drafts`** container of the `proposalsections` storage account, one JSON blob per report, created automatically on first use.
+
+Because that container holds injury and medical information between the two stages, treat its access keys as sensitive — anyone with the connection string can read every pending report. Scoping a container-level SAS token for this app instead of using an account key is worth doing if other teams share the account.
 
 ---
 
@@ -52,7 +58,8 @@ Netlify provisions blob storage automatically, so there is nothing to configure.
    - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
    - `EMAIL_TO` (required), `LEGAL_EMAIL` (optional) — utility strike recipients
    - `HR_EMAIL_TO` — injury and offensive behavior recipients, comma-separated for more than one
-   - Optionally: `MAX_IMAGE_SIZE_MB` (default 20), `DRAFT_RETENTION_DAYS` (default 90), `SITE_URL` (only if the site is served from somewhere other than its Netlify URL)
+   - `AZURE_STORAGE_CONNECTION_STRING` — from the storage account's **Access keys** page in the Azure portal. Without it the injury form still works; the manager's form just won't prefill.
+   - Optionally: `AZURE_STORAGE_CONTAINER` (default `injury-drafts`), `MAX_IMAGE_SIZE_MB` (default 20), `DRAFT_RETENTION_DAYS` (default 90), `DRAFT_TIMEOUT_MS` (default 3000), `SITE_URL` (only if the site is served from somewhere other than its Netlify URL)
 3. Deploy. The forms are live at your Netlify URL.
 
 See **NETLIFY.md** for full deploy and env details.

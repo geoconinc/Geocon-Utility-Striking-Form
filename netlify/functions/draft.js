@@ -2,7 +2,7 @@
 // retype what the employee already filled in. Photo bytes are never returned,
 // only a count — they are re-attached server side when the report is completed.
 
-const draftStore = require("../../lib/draft-store-netlify");
+const draftStore = require("../../lib/draft-store-azure");
 const { readDraftForPrefill } = require("../../lib/submit-report");
 const { jsonResponse, toErrorResponse } = require("../../lib/http");
 

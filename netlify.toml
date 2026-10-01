@@ -3,7 +3,7 @@
   functions = "netlify/functions"
   # Don't fail build when these env var *values* appear in repo (e.g. docs/examples). Real secret is SMTP_PASS.
   [build.environment]
-    SECRETS_SCAN_OMIT_KEYS = "SMTP_HOST,EMAIL_TO,LEGAL_EMAIL,HR_EMAIL_TO,PORT,SITE_URL,MAX_IMAGE_SIZE_MB,DRAFT_RETENTION_DAYS"
+    SECRETS_SCAN_OMIT_KEYS = "SMTP_HOST,EMAIL_TO,LEGAL_EMAIL,HR_EMAIL_TO,PORT,SITE_URL,MAX_IMAGE_SIZE_MB,DRAFT_RETENTION_DAYS,DRAFT_TIMEOUT_MS,AZURE_STORAGE_CONTAINER"
 
 [functions]
   node_bundler = "esbuild"

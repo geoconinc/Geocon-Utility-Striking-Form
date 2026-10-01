@@ -4,12 +4,18 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const draftStore = require("./lib/draft-store-file");
+const azureDraftStore = require("./lib/draft-store-azure");
+const fileDraftStore = require("./lib/draft-store-file");
 const { submitReport, readDraftForPrefill } = require("./lib/submit-report");
 const { toErrorResponse } = require("./lib/http");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// The deployed site always uses Azure. Locally it is used too when a connection
+// string is configured, so the same code path can be exercised against Azurite;
+// otherwise drafts go to disk and development works offline.
+const draftStore = process.env.AZURE_STORAGE_CONNECTION_STRING ? azureDraftStore : fileDraftStore;
 
 const MAX_IMAGE_SIZE_BYTES = (parseInt(process.env.MAX_IMAGE_SIZE_MB || "20", 10) || 20) * 1024 * 1024;
 

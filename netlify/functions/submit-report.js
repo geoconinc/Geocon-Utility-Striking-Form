@@ -2,7 +2,7 @@
 // its own untouched endpoint in submit.js.
 
 const parser = require("lambda-multipart-parser");
-const draftStore = require("../../lib/draft-store-netlify");
+const draftStore = require("../../lib/draft-store-azure");
 const { submitReport } = require("../../lib/submit-report");
 const { jsonResponse, toErrorResponse } = require("../../lib/http");
 

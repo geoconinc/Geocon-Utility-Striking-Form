@@ -89,7 +89,7 @@ async function initDraftPrefill(form) {
     const res = await fetch(`/api/draft?id=${encodeURIComponent(draftId)}`);
     const result = await res.json().catch(() => ({}));
     if (!res.ok || !result.success) {
-      throw new Error(result.error || "This link has expired or the report has already been completed.");
+      throw new Error(result.error || "This report could not be loaded.");
     }
 
     applyDraft(form, result.data);
