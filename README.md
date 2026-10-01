@@ -19,7 +19,7 @@ The link is available 24/7. Staff can open it on any device (phone, tablet, lapt
 | Report | Page | Goes to |
 | --- | --- | --- |
 | Utility strike | `strike.html` | `EMAIL_TO` and `LEGAL_EMAIL` |
-| Injury / accident and illness | `injury.html` | `HR_EMAIL_TO`, plus the manager named on the form |
+| Injury / accident and illness | `injury.html` | the manager named on the form, then `HR_EMAIL_TO` once the investigation is attached |
 | Offensive behavior | `offensive.html` | `HR_EMAIL_TO` |
 
 The utility strike form is self-contained: `script.js` and `netlify/functions/submit.js` serve only that form and are not shared with the other two, which run through `report.js` and `netlify/functions/submit-report.js`.
@@ -34,13 +34,17 @@ The utility strike form is self-contained: `script.js` and `netlify/functions/su
 
 ### The injury form's two stages
 
-An injury report reaches HR twice, because the investigation half is the manager's job and shouldn't delay HR seeing the incident:
+An injury report is filled in by two people, and **HR only receives it once it is complete**:
 
-1. The employee files the report and names their manager. HR and the manager both get an email subject-lined **"Initial, investigation pending"**.
-2. That email contains a **Complete this report** button. The employee's answers and photos are saved to Azure Blob Storage under a random id that the button's link carries, so the manager's form opens already filled in — they only add the Supervisor / Investigation section.
-3. On that second submit, HR gets a **"Completed"** email containing both halves, with the employee's original photos re-attached. The saved copy is then deleted.
+1. The employee files the report and names their manager. **Only the manager** is emailed, subject-lined *"Action needed: complete the injury report for …"*. HR is not on this email.
+2. That email contains a **Complete this report** button. The employee's answers and photos are saved to Azure under a random id the button's link carries, so the manager's form opens already filled in — they only add the Supervisor / Investigation section.
+3. On that submit, HR gets a single *"Injury Report – …"* email containing both halves, with the employee's original photos attached. The saved copy is deleted immediately afterwards.
 
-Storage is treated as a convenience, never a dependency: every draft operation is capped at `DRAFT_TIMEOUT_MS` (default 3000) and failures are logged and stepped over. If Azure is slow or unreachable the report still emails normally and the manager's form simply opens blank, as it did before this existed. Anything left unfinished expires after `DRAFT_RETENTION_DAYS` (default 90).
+Because HR is not on the first email, the manager's address is required — without it the report would reach nobody, so a filing without one is rejected rather than silently going nowhere.
+
+> **Worth knowing:** nobody outside the manager learns of an injury until they complete the investigation. If a manager sits on it, HR finds out late, which matters against the Cal/OSHA serious-injury reporting window and the workers' comp DWC-1 clock. Routing the first email to HR as well would remove that risk at the cost of them receiving two emails per injury.
+
+Storage is treated as a convenience, never a dependency: every draft operation is capped at `DRAFT_TIMEOUT_MS` (default 3000) and failures are logged and stepped over. If Azure is slow or unreachable the report still emails the manager normally; their form just opens blank and the email says so. Anything left unfinished expires after `DRAFT_RETENTION_DAYS` (default 90).
 
 ### Storage (Azure)
 
@@ -50,7 +54,17 @@ Injury details are held in Geocon's own Azure tenant rather than a third party.
 | --- | --- |
 | Storage account | `geoconhrreports` |
 | Resource group | `Geocon-HR-Reports` (subscription `GeoconAzure`, West US) |
-| Container | `injury-drafts` — one JSON blob per report, created automatically on first use |
+| Container | `injury-drafts`, created automatically on first use |
+
+Each draft is a small JSON record plus one binary blob per photo:
+
+```
+<id>.json   the answers, and the filename of each photo
+<id>/0      the first photo, exactly as uploaded
+<id>/1      ...
+```
+
+Photos are deliberately kept out of the record. Base64-encoding them into it would inflate them by a third, and prefilling the manager's form — which only shows text — would have to download every image byte just to discard it. This way prefill reads under a kilobyte, and the photos are fetched once, when the completed report is built.
 
 The account is dedicated to HR reporting rather than shared with another system, so its access can be granted and revoked without touching anything else. It is configured with anonymous blob access disabled, HTTPS required, TLS 1.2 minimum, and blob soft delete reduced from the 7-day default to 1 day.
 
